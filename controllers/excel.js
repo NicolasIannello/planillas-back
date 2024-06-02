@@ -1,6 +1,5 @@
 const { response }=require('express');
 const Excel = require('../models/excel');
-const excel = require('../models/excel');
 
 const Cargar= async(req,res = response)=>{
     const desde= req.query.desde || 0;
