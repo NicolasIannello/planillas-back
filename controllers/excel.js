@@ -1,5 +1,6 @@
 const { response }=require('express');
 const Excel = require('../models/excel');
+const Dato = require('../models/dato');
 
 const Cargar= async(req,res = response)=>{
     const desde= req.query.desde || 0;
@@ -31,8 +32,14 @@ const Subir= async(req,res = response)=>{
         const excel = new Excel(req.body);
         await excel.save();
 
+        for (let i = 1; i < req.body.excel.length-1; i++) {
+            const dato = new Dato({id: excel.id , celda: req.body.excel[i].celda, dato: req.body.excel[i].dato});
+            await dato.save();
+        }
+
         res.json({
             ok:true,
+            excel
         });
         
     } catch (error) {
