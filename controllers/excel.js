@@ -51,4 +51,28 @@ const Subir= async(req,res = response)=>{
     }
 };
 
-module.exports={Cargar, Subir}
+const CargarDatos= async(req,res = response)=>{
+    const {id}=req.body;
+    
+    const dato = await Dato.find({ 'id': { $eq: id } }, { celda: 1, dato : 1 });
+    let datos=[], cols=[]
+
+    for (let i = 0; i < dato.length; i++) {
+        if(dato[i].celda[0]=='A'){
+            if(cols.length!=0){
+                datos.push(cols)
+                cols=[]
+            }
+        }
+        cols.push({dato: dato[i].dato, id: dato[i]._id})
+
+        if(i==dato.length-1) datos.push(cols)
+    }
+
+    res.json({
+        ok:true,
+        datos
+    });
+};
+
+module.exports={Cargar, Subir, CargarDatos}

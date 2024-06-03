@@ -1,6 +1,6 @@
 const { Router }=require('express');
 const { check }=require('express-validator');
-const { Cargar, Subir } = require('../controllers/excel');
+const { Cargar, Subir, CargarDatos } = require('../controllers/excel');
 const { validarCampos } = require('../middlewares/validar-campos');
 
 const router=Router();
@@ -14,5 +14,9 @@ router.post('/',[
     validarCampos
 ],Subir);
 
+router.post('/datos',[
+    check('id').isMongoId(),
+    validarCampos
+],CargarDatos);
 
 module.exports=router;
