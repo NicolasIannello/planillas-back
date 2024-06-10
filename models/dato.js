@@ -2,8 +2,7 @@ const { Schema, model } = require('mongoose');
 
 const DatoSchema = Schema({
     id: { type: String, required: true },
-    celda: { type: String, required: true },
-    dato: { type: String, required: true }
+    dato: { type: Object, required: true }
 });
 
 DatoSchema.method('toJSON', function() {
