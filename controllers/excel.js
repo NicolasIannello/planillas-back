@@ -106,4 +106,33 @@ const Llenar= async(req,res = response)=>{
     }
 };
 
-module.exports={Cargar, Subir, CargarDatos, Llenar}
+const Actualizar= async(req,res = response)=>{
+    const {id}=req.body;
+
+    try {
+        const datoDB= await Dato.find({ 'id': { $eq: id } });
+        if(!datoDB){
+            return res.status(404).json({
+                ok:false,
+                msg:'Ocurrio un error'
+            });
+        }
+
+        const {datos, ...campos}=req.body;
+        campos.dato=datos;
+
+        await Dato.findByIdAndUpdate(datoDB[0]._id, campos,{new:true});
+
+        res.json({
+            ok:true,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok:false,
+            msg:'error'
+        });
+    }
+}
+
+module.exports={Cargar, Subir, CargarDatos, Llenar, Actualizar}
