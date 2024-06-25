@@ -106,11 +106,11 @@ const login=async(req,res=response)=>{
             })
         }
 
-        const token= await generarJWT(usuarioDB.id);
+        const token= await generarJWT(usuarioDB._id);
         res.json({
             ok:true,
             token,
-            user: usuarioDB.user
+            user: usuarioDB
         })
     } catch (error) {
         console.log(error);
@@ -124,7 +124,7 @@ const login=async(req,res=response)=>{
 const renewToken= async(req,res=response)=>{
     const {_id }=req.body//req.header('_id');
     const token= await generarJWT(_id);
-    const usuarioDB= await Usuario.find({ user: _id })
+    const usuarioDB= await Usuario.findById(_id)
 
     if(usuarioDB.length==0){
         res.json({
