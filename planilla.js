@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '20mb' }));
 dbConnection();
 
 app.use('/planilla/excel', require('./routes/excel'));
-
+app.use('/planilla/user', require('./routes/usuarios'));
 
 app.listen( process.env.PORT, () =>{
     console.log('Iniciando');
