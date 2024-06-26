@@ -31,10 +31,10 @@ const actualizarUsuario= async(req,res=response)=>{
                 msg:'no existe ese usuario id'
             });
         }
-
-        const {estado, ...campos}=req.body;
+        const {estado, rol, ...campos}=req.body;
         
         campos.estado=estado;
+        campos.rol=rol;
 
         await Usuario.findByIdAndUpdate(id, campos,{new:true});
 
