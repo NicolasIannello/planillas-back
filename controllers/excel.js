@@ -135,4 +135,39 @@ const Actualizar= async(req,res = response)=>{
     }
 }
 
-module.exports={Cargar, Subir, CargarDatos, Llenar, Actualizar}
+const Borrar= async(req,res=response)=>{
+    const {id}=req.body;
+
+    try {
+        const excelDB= await Excel.findById(id);
+        const hojasDB= await Hoja.find({ 'id': { $eq: excelDB._id } },);
+
+        if(!excelDB){
+            return res.status(404).json({
+                ok:false,
+                msg:'error'
+            });
+        }
+
+        hojasDB.forEach(async element => {
+            await Dato.deleteMany({ 'id': { $eq: element._id } },)
+            await Hoja.findByIdAndDelete(element._id)
+        });
+
+        await Excel.findByIdAndDelete(id);
+
+        return res.json({
+            ok:true,
+            msg:'Excel eliminado',
+        });   
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok:false,
+            msg:'error'
+        });
+    }
+};
+
+
+module.exports={Cargar, Subir, CargarDatos, Llenar, Actualizar, Borrar}

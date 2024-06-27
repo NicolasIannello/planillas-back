@@ -1,6 +1,6 @@
 const { Router }=require('express');
 const { check }=require('express-validator');
-const { Cargar, Subir, CargarDatos, Llenar, Actualizar } = require('../controllers/excel');
+const { Cargar, Subir, CargarDatos, Llenar, Actualizar, Borrar } = require('../controllers/excel');
 const { validarCampos } = require('../middlewares/validar-campos');
 //const expressFileUpload =require('express-fileupload');
 
@@ -34,5 +34,10 @@ router.post('/actualizar',[
     check('id').isMongoId(),
     validarCampos
 ],Actualizar);
+
+router.post('/borrar',[
+    check('id').isMongoId(),
+    validarCampos
+],Borrar);
 
 module.exports=router;
