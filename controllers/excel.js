@@ -2,12 +2,15 @@ const { response }=require('express');
 const Excel = require('../models/excel');
 const Dato = require('../models/dato');
 const Hoja = require('../models/hoja');
+const Usuario = require('../models/usuario');
 
 const Cargar= async(req,res = response)=>{
     const desde= req.query.desde || 0;
+    const id=req.query.id
 
+    const UserDB= await Usuario.findById(id);
     [ excels, total ]= await Promise.all([
-        Excel.find().skip(desde).limit(25).sort({ date: -1 }),
+        Excel.find({ 'vista': { $lt: (UserDB.rol+1) } }).skip(desde).limit(25).sort({ date: -1 }),
         Excel.countDocuments()
     ]);
 
@@ -135,6 +138,36 @@ const Actualizar= async(req,res = response)=>{
     }
 }
 
+const ActualizarVistaExcel= async(req,res = response)=>{
+    const {id}=req.body;
+
+    try {
+        const ExcelDB= await Excel.findById(id);
+        if(!ExcelDB){
+            return res.status(404).json({
+                ok:false,
+                msg:'Ocurrio un error'
+            });
+        }
+
+        const {vista, ...campos}=req.body;
+        campos.vista=vista;
+
+        await Excel.findByIdAndUpdate(ExcelDB._id, campos,{new:true});
+
+        res.json({
+            ok:true,
+            msg:'Vista actualizada'
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok:false,
+            msg:'error'
+        });
+    }
+}
+
 const Borrar= async(req,res=response)=>{
     const {id}=req.body;
 
@@ -170,4 +203,4 @@ const Borrar= async(req,res=response)=>{
 };
 
 
-module.exports={Cargar, Subir, CargarDatos, Llenar, Actualizar, Borrar}
+module.exports={Cargar, Subir, CargarDatos, Llenar, Actualizar, Borrar, ActualizarVistaExcel}
