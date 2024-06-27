@@ -3,6 +3,7 @@ const { Schema, model } = require('mongoose');
 const ExcelSchema = Schema({
     nombre: { type: String, required: true },
     date: { type: Date, required: true },
+    vista: { type: Number, required: true },
     fecha: { type: String, required: true }
 });
 
