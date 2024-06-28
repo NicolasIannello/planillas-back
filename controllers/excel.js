@@ -56,7 +56,7 @@ const Subir= async(req,res = response)=>{
 };
 
 const CargarDatos= async(req,res = response)=>{
-    const {id, tipo}=req.body;
+    const {id, tipo, user}=req.body;
 
     if(tipo=='hojas'){
         const hojas = await Hoja.find({ 'id': { $eq: id }})
@@ -74,6 +74,27 @@ const CargarDatos= async(req,res = response)=>{
         });
     }else{
         const dato = await Dato.find({ 'id': { $eq: id } });
+
+        const userDB = await Usuario.findById(user);
+
+        if(!userDB){
+            return res.json({
+                ok:false,
+                msg:'Error al verificar user'
+            });
+        }
+
+        if(userDB.rol==0){
+            for (let i = dato[0].dato[0].length-1; i > 0; i--) {
+                if(dato[0].dato[0][i]==10){
+                    for (let j = 0; j < dato[0].dato.length; j++) {
+                        dato[0].dato[j].splice(i,1);                        
+                    }
+                }
+            }
+            dato[0].dato.splice(0,1);
+        }
+
         return res.json({
             ok:true,
             dato
@@ -110,7 +131,7 @@ const Llenar= async(req,res = response)=>{
 };
 
 const Actualizar= async(req,res = response)=>{
-    const {id}=req.body;
+    const {id, user}=req.body;
 
     try {
         const datoDB= await Dato.find({ 'id': { $eq: id } });
@@ -122,6 +143,27 @@ const Actualizar= async(req,res = response)=>{
         }
 
         const {datos, ...campos}=req.body;
+        
+        const userDB = await Usuario.findById(user);
+
+        if(!userDB){
+            return res.json({
+                ok:false,
+                msg:'Error al verificar usuario'
+            });
+        }
+
+        if(userDB.rol==0){
+            datos.unshift(datoDB[0].dato[0])
+            for (let i = 0; i < datoDB[0].dato[0].length; i++) {
+                if(datoDB[0].dato[0][i]==10){
+                    for (let j = 1; j < datoDB[0].dato.length; j++) {
+                        datos[j].splice(i, 0, datoDB[0].dato[j][i]);
+                    }
+                }
+            }
+        }
+
         campos.dato=datos;
 
         await Dato.findByIdAndUpdate(datoDB[0]._id, campos,{new:true});
