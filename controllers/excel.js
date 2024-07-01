@@ -37,7 +37,7 @@ const Subir= async(req,res = response)=>{
         await excel.save();
 
         for (let i = 0; i < req.body.nombres.length; i++) {
-            const hoja = new Hoja({id: excel._id , hoja: req.body.nombres[i]});
+            const hoja = new Hoja({id: excel._id , hoja: req.body.nombres[i], vista: 0});
             await hoja.save();
         }
 
@@ -59,7 +59,16 @@ const CargarDatos= async(req,res = response)=>{
     const {id, tipo, user}=req.body;
 
     if(tipo=='hojas'){
-        const hojas = await Hoja.find({ 'id': { $eq: id }})
+        const userDB = await Usuario.findById(user);
+
+        if(!userDB){
+            return res.json({
+                ok:false,
+                msg:'Error al verificar user'
+            });
+        }
+
+        const hojas = await Hoja.find({$and: [{ 'id': { $eq: id } }, { 'vista': { $lt: (userDB.rol+1) } }] })
 
         if(!hojas){
             return res.json({
@@ -210,6 +219,36 @@ const ActualizarVistaExcel= async(req,res = response)=>{
     }
 }
 
+const ActualizarVistaHoja= async(req,res = response)=>{
+    const {_id}=req.body;
+
+    try {
+        const HojaDB= await Hoja.findById(_id);
+        if(!HojaDB){
+            return res.status(404).json({
+                ok:false,
+                msg:'Ocurrio un error'
+            });
+        }
+
+        const {vista, ...campos}=req.body;
+        campos.vista=vista;
+
+        await Hoja.findByIdAndUpdate(HojaDB._id, campos,{new:true});
+
+        res.json({
+            ok:true,
+            msg:'Vista actualizada'
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok:false,
+            msg:'error'
+        });
+    }
+}
+
 const Borrar= async(req,res=response)=>{
     const {id}=req.body;
 
@@ -245,4 +284,4 @@ const Borrar= async(req,res=response)=>{
 };
 
 
-module.exports={Cargar, Subir, CargarDatos, Llenar, Actualizar, Borrar, ActualizarVistaExcel}
+module.exports={Cargar, Subir, CargarDatos, Llenar, Actualizar, Borrar, ActualizarVistaExcel, ActualizarVistaHoja}
