@@ -2,6 +2,7 @@ const { Schema, model } = require('mongoose');
 
 const HojaSchema = Schema({
     id: { type: String, required: true },
+    vista: { type: Number, required: true },
     hoja: { type: String, required: true }
 });
 
