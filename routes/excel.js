@@ -1,6 +1,6 @@
 const { Router }=require('express');
 const { check }=require('express-validator');
-const { Cargar, Subir, CargarDatos, Llenar, Actualizar, Borrar, ActualizarVistaExcel } = require('../controllers/excel');
+const { Cargar, Subir, CargarDatos, Llenar, Actualizar, Borrar, ActualizarVistaExcel, ActualizarVistaHoja } = require('../controllers/excel');
 const { validarCampos } = require('../middlewares/validar-campos');
 //const expressFileUpload =require('express-fileupload');
 
@@ -40,6 +40,12 @@ router.post('/actualizarVistaExcel',[
     check('id').isMongoId(),
     validarCampos
 ],ActualizarVistaExcel);
+
+router.post('/actualizarVistaHoja',[
+    check('vista','el campo es obligatorio').not().isEmpty(),
+    check('_id').isMongoId(),
+    validarCampos
+],ActualizarVistaHoja);
 
 router.post('/borrar',[
     check('id').isMongoId(),
