@@ -93,6 +93,26 @@ const CargarDatos= async(req,res = response)=>{
             });
         }
 
+        for (let i = 0; i < dato[0].dato[2].length; i++) {
+            if(dato[0].dato[2][i]==20){
+                for (let j = 4; j < dato[0].dato.length; j++) {
+                    if(dato[0].dato[j][i]!=''){
+                        let date = new Date(dato[0].dato[j][i]);
+                        if(dato[0].dato[2][i+1]==30){
+                            let dosMeses = new Date();
+                            dosMeses.setMonth(dosMeses.getMonth() - 2);
+                            if(dosMeses>date) dato[0].dato[j][i+1]='Critico';
+                        }
+                        if(dato[0].dato[2][i+2]==40){
+                            let tresMeses = new Date();
+                            tresMeses.setMonth(tresMeses.getMonth() - 3);
+                            if(tresMeses>date) dato[0].dato[j][i+2]='Vencido';
+                        }
+                    }
+                }
+            }
+        }
+
         if(userDB.rol==0){
             for (let i = dato[0].dato[0].length-1; i > 0; i--) {
                 if(dato[0].dato[0][i]==10){
